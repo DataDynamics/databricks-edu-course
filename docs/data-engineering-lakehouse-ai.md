@@ -274,7 +274,7 @@ RAG는 질문에 관련된 자료를 검색하여 LLM의 입력에 함께 넣는
 | 분석·모델 | SQL 분석에 데이터를 제공하고, MLflow로 실험·모델을 관리합니다. |
 | RAG 검색 | AI Search의 검색 인덱스 등을 연결합니다. 문서별 접근 정책은 애플리케이션 설계에서도 확인합니다. |
 
-제품의 역할은 [Data Engineering](https://docs.databricks.com/aws/en/data-engineering/), [Unity Catalog](https://docs.databricks.com/aws/en/data-governance/unity-catalog/), [Lakeflow Jobs](https://docs.databricks.com/aws/en/jobs/), [AI Search](https://docs.databricks.com/aws/en/ai-search/ai-search) 공식 문서를 참고합니다. AI Search는 이전에 Vector Search라는 이름으로 제공된 기능입니다.
+Unity Catalog는 [별도 문서](unity-catalog.md)에서 자세히 설명합니다. 제품의 역할은 [Data Engineering](https://docs.databricks.com/aws/en/data-engineering/), [Unity Catalog](https://docs.databricks.com/aws/en/data-governance/unity-catalog/), [Lakeflow Jobs](https://docs.databricks.com/aws/en/jobs/), [AI Search](https://docs.databricks.com/aws/en/ai-search/ai-search) 공식 문서를 참고합니다. AI Search는 이전에 Vector Search라는 이름으로 제공된 기능입니다.
 
 ### 학습 결과물은 작은 쇼핑몰 데이터 파이프라인으로 만듭니다
 
