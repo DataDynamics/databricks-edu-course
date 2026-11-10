@@ -9,3 +9,4 @@ Databricks를 처음 접하는 개발자를 위한 교육 자료입니다.
 3. [Python·PySpark와 JVM의 런타임 구조](docs/python-pyspark-runtime.md): Python·Java·Scala·Spark·PySpark의 실행 구조와 Python worker의 역할을 PNG로 비교합니다. Spark Connect의 발전과 Python 중심 학습 방향을 목차·용어집과 함께 설명합니다.
 4. [Data Engineering에서 Lakehouse와 AI까지](docs/data-engineering-lakehouse-ai.md): PNG 인포그래픽 13장으로 데이터 엔지니어의 역할·기술셋, 운영 DB·Data Mart·Data Warehouse와 Data Lake 비교, Lakehouse, 데이터 품질, AI 학습·추론과 RAG의 관계를 설명합니다. 목차와 용어집을 포함합니다.
 5. [Unity Catalog로 데이터·AI 자산 관리하기](docs/unity-catalog.md): PNG 인포그래픽 8장으로 3단계 객체 구조, Managed·External, 권한 상속, 행 필터·열 마스크·ABAC, 계보·감사, Lakehouse Federation·OpenSharing, 환경별 카탈로그 설계를 설명합니다. SQL 실습과 용어집을 포함합니다.
+6. [Databricks 플랫폼 한눈에 보기](docs/databricks-platform.md): PNG 인포그래픽 8장으로 플랫폼 구성, 계정·컨트롤 플레인·컴퓨트 플레인, 컴퓨트 선택, 워크스페이스 화면, Lakeflow, SQL·BI·Genie, AI·ML, 비용 관리와 학습 순서를 설명합니다. 예제 코드와 용어집을 포함합니다.
