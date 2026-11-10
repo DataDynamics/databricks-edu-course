@@ -2,6 +2,23 @@
 
 이 문서는 Databricks를 처음 접하는 개발자를 위한 입문 자료입니다. Python의 변수, 리스트, 반복문, 함수에 대한 기초 지식을 전제로 합니다. 프로세스·스레드·노드의 관계를 살펴본 뒤 **순수 Python → Python + pandas → PySpark** 순서로 같은 문제를 해결합니다. 기본 설명과 실습에는 약 55분이 필요하며, MySQL 확장 실습에는 환경 준비를 제외하고 약 30분이 추가로 필요합니다.
 
+<a id="contents"></a>
+
+## 목차
+
+- [학습 목표](#learning-objectives)
+- [1. Python, pandas, Spark, PySpark, Databricks의 관계](#tools-and-language)
+- [2. 실행 방식과 다섯 가지 처리 구조 비교](#execution-models)
+- [3. 순수 Python → Python + pandas → PySpark 기본 실습](#basic-examples)
+- [4. Transformation, Action, 지연 실행](#transformations-and-actions)
+- [5. MySQL 데이터 읽기와 세 방식의 집계 실습](#mysql-examples)
+- [6. Databricks에서 주의할 점](#databricks-cautions)
+- [7. PySpark를 사용하는 이유와 선택 기준](#why-pyspark)
+- [8. 이해도 확인 문제와 해설](#review-questions)
+- [9. 용어집](#glossary)
+
+<a id="learning-objectives"></a>
+
 ## 학습 목표
 
 이 문서를 학습하면 다음 내용을 설명할 수 있습니다.
@@ -13,6 +30,8 @@
 - MySQL JDBC 읽기부터 집계 결과 조회까지 Driver와 Executor의 역할을 구분합니다.
 - 단일 스레드, 멀티 스레드, 멀티 프로세스, 멀티 노드 실행 구조를 비교합니다.
 - 동시성·병렬성·분산 처리의 차이와 PySpark를 사용하는 이유를 설명합니다.
+
+<a id="tools-and-language"></a>
 
 ## 1. Python은 언어이고, PySpark는 Python으로 Spark를 사용하는 API입니다
 
@@ -31,6 +50,8 @@ Python은 웹 개발, 자동화 등에도 사용하는 언어이며, PySpark는 
 Databricks의 Python 노트북에서는 일반 Python 코드와 PySpark 코드를 함께 사용합니다. 노트북에서 Python을 선택했다고 해서 모든 코드가 자동으로 Spark 분산 작업이 되는 것은 아닙니다. 노트북의 언어 사용 방식은 [Databricks 공식 문서](https://docs.databricks.com/aws/en/notebooks/notebooks-code)를 참고합니다.
 
 > 이 문서의 “일반 Python 처리”는 리스트와 반복문 등으로 데이터를 직접 처리하는 예제를 뜻합니다. Python 자체가 단일 컴퓨터나 단일 스레드로만 실행된다는 뜻은 아닙니다. Python에서도 다른 라이브러리나 프로세스를 이용해 병렬·분산 처리를 구현할 수 있습니다. Spark 역시 한 대의 컴퓨터에서 로컬 모드로 실행할 수 있습니다.
+
+<a id="execution-models"></a>
 
 ## 2. 가장 큰 차이는 데이터 처리의 실행 방식입니다
 
@@ -120,6 +141,8 @@ GIL을 해제하는 네이티브 연산 라이브러리나 GIL을 비활성화�
 Spark 클러스터에서는 Driver가 Task를 배분하고 여러 노드의 Executor 프로세스가 이를 실행합니다. 각 Executor는 배정된 코어와 Task 자원 설정에 따라 여러 Task를 동시에 실행할 수 있으므로 ⑤와 같은 구조를 활용합니다. Spark를 로컬 모드나 단일 노드에서 실행하면 멀티 노드 분산 처리는 아닙니다. 이 관계는 [Spark 클러스터 개요](https://spark.apache.org/docs/latest/cluster-overview.html)를 참고합니다.
 
 또한 PySpark DataFrame의 내장 필터·집계는 Python의 행별 반복문을 여러 스레드에 복사하는 방식이 아닙니다. Python으로 작성한 표현식을 Spark 실행 엔진에 전달합니다. Python UDF를 사용하면 별도의 Python 워커에서 사용자 코드가 실행되며 직렬화 비용 등도 고려해야 합니다. 이 차이는 [Spark SQL 실행 엔진](https://spark.apache.org/docs/latest/sql-programming-guide.html)과 [PySpark UDF 안내](https://spark.apache.org/docs/latest/api/python/user_guide/udfandudtf.html)를 참고합니다.
+
+<a id="basic-examples"></a>
 
 ## 3. 순수 Python → Python + pandas → PySpark로 같은 문제를 해결합니다
 
@@ -267,6 +290,8 @@ print("세 방식의 집계 결과가 같습니다.")
 
 `collect()` 이후의 리스트 순회는 다시 일반 Python 처리입니다. `collect()`는 결과 전체를 Python 쪽으로 가져오므로 결과가 충분히 작을 때만 사용합니다. Spark Classic에서는 Driver 메모리에, Spark Connect에서는 결과를 받는 클라이언트 메모리에 적재되는 크기를 고려해야 합니다. 전체 결과를 수집한다는 동작은 [collect 공식 문서](https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.DataFrame.collect.html)를 참고합니다.
 
+<a id="transformations-and-actions"></a>
+
 ## 4. PySpark에서는 변환과 액션을 구분합니다
 
 **지연 실행(Lazy Evaluation)**은 DataFrame의 변환 결과를 바로 모두 계산하지 않고, 필요한 결과를 요청할 때 실행하는 방식입니다. Spark는 그전에 여러 변환을 함께 검토하여 실행 계획을 최적화할 수 있습니다.
@@ -279,6 +304,8 @@ print("세 방식의 집계 결과가 같습니다.")
 셀 4에서는 `sales_df`에 집계된 Python 리스트가 들어 있는 것이 아닙니다. `sales_df`는 DataFrame 객체이며, `show()`가 필요한 계산과 결과 출력을 요청합니다. 셀 5의 `collect()`도 별도의 액션입니다. 같은 DataFrame에 액션을 반복하면 캐시 등의 조건에 따라 계산이 다시 수행될 수 있습니다.
 
 단, “액션 이전에는 아무 일도 일어나지 않는다”는 뜻은 아닙니다. 데이터 소스 확인, 스키마 추론, 계획 분석 등은 앞서 수행될 수 있습니다. 지연 실행의 기본 동작은 [PySpark DataFrame 빠른 시작](https://spark.apache.org/docs/latest/api/python/getting_started/quickstart_df.html)을 참고합니다.
+
+<a id="mysql-examples"></a>
 
 ## 5. MySQL 데이터도 순수 Python → Python + pandas → PySpark로 집계합니다
 
@@ -561,6 +588,8 @@ mysql_sales_df.show(truncate=False)
 - 필요한 데이터 범위는 실제 필터 조건으로 지정합니다. `lowerBound`와 `upperBound`만으로 조회 범위를 제한하지 않습니다.
 - `cache()`도 즉시 MySQL을 읽는 Action은 아닙니다. 후속 Action이 실행되며 캐시가 채워지고, 캐시되지 않았거나 유실된 부분은 다시 읽을 수 있습니다.
 
+<a id="databricks-cautions"></a>
+
 ## 6. Databricks에서 처음 사용할 때 주의할 점입니다
 
 ### 일반 Python 반복문은 자동으로 분산되지 않습니다
@@ -580,6 +609,8 @@ mysql_sales_df.show(truncate=False)
 ### DataFrame 변환은 반환값을 사용합니다
 
 `orders_df.filter(...)`를 호출했다고 해서 기존 `orders_df`가 필터링된 내용으로 바뀌지는 않습니다. 실습의 `paid_orders_df`처럼 반환된 DataFrame을 변수에 담거나 다음 연산으로 연결합니다. DataFrame 변환 메서드의 반환 형식은 [PySpark DataFrame API](https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/dataframe.html)를 참고합니다.
+
+<a id="why-pyspark"></a>
 
 ## 7. PySpark를 사용하는 이유와 선택 기준을 이해합니다
 
@@ -618,6 +649,8 @@ PySpark가 모든 Python 작업의 다음 단계는 아닙니다. 작은 데이�
 | 대규모 테이블을 반복적으로 정제·집계·조인합니다. | PySpark DataFrame이나 Spark SQL을 고려합니다. |
 | Databricks에서 데이터 처리 흐름을 구성합니다. | Python으로 제어 로직을 작성하고 PySpark로 데이터 변환을 표현할 수 있습니다. |
 
+<a id="review-questions"></a>
+
 ## 8. 이해도를 확인합니다
 
 1. PySpark를 사용하면 Python 문법을 새로 배워야 하는지 설명합니다.
@@ -650,5 +683,78 @@ PySpark가 모든 Python 작업의 다음 단계는 아닙니다. 작은 데이�
 12. 여러 노드의 자원을 활용해야 하거나 분산 집계·실행 계획·작업 복구 기능이 필요할 때 고려합니다. 한 컴퓨터에서 충분히 처리할 수 있는 작은 분석은 pandas만으로도 해결할 수 있습니다.
 
 </details>
+
+<a id="glossary"></a>
+
+## 9. 용어집
+
+본문에서 사용한 용어를 정리합니다. 비슷한 이름이더라도 실행 위치와 역할이 다를 수 있으므로 함께 비교합니다.
+
+### 언어와 데이터 처리 도구
+
+| 용어 | 설명 |
+| --- | --- |
+| Python | 프로그램을 작성하는 범용 언어입니다. 이 문서의 순수 Python 예제는 반복문과 딕셔너리로 필터와 집계를 구현합니다. |
+| pandas | Python에서 표 형태의 데이터를 처리하는 라이브러리입니다. 이 문서의 pandas 예제는 한 컴퓨터의 메모리에서 계산합니다. |
+| Apache Spark | 데이터를 파티션으로 나누고 실행 계획과 작업 배분을 관리하는 데이터 처리 엔진입니다. 로컬 모드와 클러스터 실행을 지원합니다. |
+| PySpark | Python으로 Spark를 사용하는 API입니다. Python과 별개의 프로그래밍 언어가 아닙니다. |
+| Spark SQL | 구조화된 데이터를 SQL 또는 DataFrame API로 처리하는 Spark 구성 요소입니다. 두 API는 같은 실행 엔진을 활용합니다. |
+| Databricks | 노트북과 컴퓨팅 환경 등을 통해 데이터 처리 작업을 개발하고 실행하는 플랫폼입니다. |
+| DataFrame | 행과 열로 표현하는 데이터 구조 또는 추상화입니다. pandas DataFrame과 Spark DataFrame은 메서드와 실행 방식이 서로 다릅니다. |
+| 스키마(Schema) | 데이터의 열 이름과 자료형 등을 정의한 구조입니다. 예제의 `order_id BIGINT`처럼 열의 의미와 형식을 명시합니다. |
+| SparkSession | DataFrame 생성, 데이터 읽기, SQL 실행 등 Spark 기능을 호출하는 진입점입니다. Databricks 예제에서는 `spark` 객체로 사용합니다. |
+
+### 실행 자원과 병렬 처리
+
+| 용어 | 설명 |
+| --- | --- |
+| 노드(Node) | 이 문서에서는 클러스터에 참여하는 물리 서버 또는 가상 머신 한 대를 뜻합니다. |
+| 클러스터(Cluster) | 여러 노드의 자원을 모아 작업을 실행하는 환경입니다. |
+| CPU 코어 | 명령을 실행하는 하드웨어 자원입니다. 프로세스나 스레드의 개수와 일치하는 개념은 아닙니다. |
+| 프로세스(Process) | 실행 중인 프로그램의 인스턴스입니다. 원칙적으로 독립된 주소 공간을 가집니다. |
+| 스레드(Thread) | 프로세스 안에서 명령을 실행하는 흐름입니다. 같은 프로세스의 스레드들은 메모리를 공유합니다. |
+| 동시성(Concurrency) | 여러 작업이 겹치는 시간 동안 진행되는 성질입니다. 반드시 같은 순간에 CPU에서 실행될 필요는 없습니다. |
+| 병렬성(Parallelism) | 여러 작업이 실제로 같은 시점에 실행되는 성질입니다. 사용할 수 있는 자원과 작업 구조에 영향을 받습니다. |
+| 분산 처리(Distributed Processing) | 작업과 데이터를 네트워크로 연결된 여러 노드에 나누는 방식입니다. 병렬 처리와 함께 성립할 수 있습니다. |
+| GIL(Global Interpreter Lock) | GIL이 활성화된 CPython에서 한 프로세스 안의 Python 바이트코드 실행을 한 번에 한 스레드로 제한하는 잠금입니다. 네이티브 연산이나 free-threaded 빌드에는 다른 조건이 적용될 수 있습니다. |
+| CPU 중심 작업(CPU-bound) | 실행 시간에서 계산이 큰 비중을 차지하는 작업입니다. 순수 Python의 무거운 반복 계산 등이 해당할 수 있습니다. |
+| I/O 중심 작업(I/O-bound) | 네트워크나 디스크 등의 응답 대기가 큰 비중을 차지하는 작업입니다. 여러 요청의 대기를 겹치면 처리량을 개선할 수 있습니다. |
+
+### Spark의 실행 과정
+
+| 용어 | 설명 |
+| --- | --- |
+| 드라이버(Driver) | Spark 애플리케이션의 실행 계획과 작업 배분을 조율하는 프로세스입니다. JDBC 드라이버 라이브러리와는 다른 개념입니다. |
+| 실행기(Executor) | Driver가 배정한 Task를 실행하고 데이터를 처리하는 프로세스입니다. 자원 설정에 따라 여러 Task를 동시에 실행할 수 있습니다. |
+| 파티션(Partition) | 데이터를 나누어 처리하는 논리적인 단위입니다. 노드 수나 Executor 수와 일치할 필요는 없습니다. |
+| 태스크(Task) | Executor에 배정하는 실행 작업 단위입니다. 일반적인 Spark 데이터 처리에서는 한 Stage의 한 파티션을 처리합니다. |
+| 스테이지(Stage) | 함께 실행할 수 있는 Task들을 묶은 실행 단계입니다. 셔플 같은 데이터 교환 경계에서 단계가 나뉠 수 있습니다. |
+| 잡(Job) | Action 요청에 따라 실행되는 병렬 계산 작업입니다. Action 하나를 실행하는 과정에서 Job이 여러 개 발생할 수도 있습니다. |
+| 변환(Transformation) | 새로운 데이터 처리 계획을 만드는 연산입니다. Spark의 `filter()`, `select()`, `groupBy().agg()` 등이 해당합니다. |
+| 액션(Action) | 결과를 조회하거나 저장하기 위해 계산 실행을 요청하는 연산입니다. Spark의 `show()`, `count()`, `collect()` 등이 해당합니다. |
+| 지연 실행(Lazy Evaluation) | 변환 결과를 즉시 모두 계산하지 않고, 결과가 필요한 시점에 실행하는 방식입니다. 앞서 스키마 조회나 계획 분석이 발생할 수는 있습니다. |
+| 실행 계획(Execution Plan) | 데이터를 어떤 순서와 연산으로 처리할지 나타내는 계획입니다. Spark는 이를 분석하고 최적화하며, `explain()`으로 확인할 수 있습니다. |
+| 셔플(Shuffle) | 같은 키의 집계나 조인 등을 위해 파티션 사이에서 데이터를 재분배하는 과정입니다. 네트워크와 디스크 사용 비용이 발생할 수 있습니다. |
+| AQE(Adaptive Query Execution) | 실행 중 얻은 통계를 활용해 물리 실행 계획을 조정하는 기능입니다. 셔플 파티션을 합치는 등의 최적화를 수행할 수 있습니다. |
+| 캐시(Cache) | 계산한 데이터를 재사용할 수 있도록 보관하는 기능입니다. Spark의 `cache()` 호출만으로 모든 데이터가 즉시 읽히거나 저장되지는 않습니다. |
+| UDF(User-Defined Function) | 사용자가 정의하여 데이터 처리에 적용하는 함수입니다. Python UDF는 Python 워커 실행과 데이터 전달 비용 등을 고려해야 합니다. |
+| Python 워커(Python Worker) | Executor 측에서 Python UDF 등 사용자 Python 코드를 실행하는 프로세스입니다. Spark Driver나 Executor 자체와 동일한 프로세스는 아닙니다. |
+| 직렬화(Serialization) | 객체를 저장하거나 다른 프로세스·노드로 전달할 수 있는 형식으로 변환하는 작업입니다. 역직렬화는 그 형식에서 객체를 복원하는 작업입니다. |
+
+### 데이터베이스 연결과 조회
+
+| 용어 | 설명 |
+| --- | --- |
+| JDBC(Java Database Connectivity) | Java 기반 프로그램에서 데이터베이스에 연결하고 조회하는 인터페이스입니다. Spark의 MySQL 예제에서는 JDBC 데이터 소스를 사용합니다. |
+| JDBC 드라이버 | 데이터베이스별 JDBC 연결을 구현한 라이브러리입니다. MySQL 예제에서는 Connector/J를 사용하며, Spark Driver 프로세스와 구분합니다. |
+| PyMySQL | Python에서 MySQL에 연결하는 라이브러리입니다. 순수 Python 예제에서 연결과 커서 조회에 사용합니다. |
+| SQLAlchemy | Python에서 데이터베이스 연결과 SQL 실행 등을 다루는 라이브러리입니다. pandas 예제에서는 연결 엔진을 제공하고 실제 MySQL 연결에는 PyMySQL을 사용합니다. |
+| 커서(Cursor) | SQL을 실행하고 조회 결과를 읽는 객체입니다. 예제의 `SSCursor`는 결과 전체를 한꺼번에 버퍼에 담지 않고 순회합니다. |
+| 연결 풀(Connection Pool) | 데이터베이스 연결을 재사용하기 위해 관리하는 구조입니다. pandas 예제에서는 작업 후 `engine.dispose()`로 풀을 정리합니다. |
+| 푸시다운(Pushdown) | 필터나 집계 같은 연산을 데이터 소스 쪽에서 수행하도록 전달하는 최적화입니다. MySQL 실습에서는 Spark의 실행 위치를 관찰하기 위해 일부 푸시다운을 끕니다. |
+| TLS(Transport Layer Security) | 네트워크 통신을 암호화하고 인증서로 상대를 확인하는 데 사용하는 프로토콜입니다. 예제에서는 인증서 신뢰와 호스트 이름 검증을 준비합니다. |
+| Secret / Secret Scope | 비밀번호 등 비밀 값을 코드 밖에서 관리하는 항목과 그 모음입니다. 예제에서는 `dbutils.secrets.get()`으로 MySQL 인증 정보를 읽습니다. |
+
+[문서 목차로 돌아갑니다.](#contents)
 
 [교육 목차로 돌아갑니다.](../README.md)
