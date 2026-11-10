@@ -1,7 +1,5 @@
 # 저장소 이해하기: Local Disk, NAS, NFS, HDFS, S3
 
-> **심화 참고 자료입니다.** 기본 구분은 [03. 저장과 계산](course/03-storage-and-compute.md), 계정 없이 실행하는 예제는 [실습 1](labs/01-local-python.md)을 먼저 봅니다. 아래 NAS·NFS·HDFS·S3 코드는 준비된 저장소와 인증이 필요합니다. [전체 학습 순서](../README.md) · [심화 자료 색인](reference/README.md)
-
 **저장소는 데이터를 어디에 두고 어떻게 읽는지를 결정합니다. Python·PySpark는 읽은 데이터를 어떻게 처리할지를 결정합니다.** 이 문서에서는 저장 구조를 비교하고, 같은 CSV를 Python으로 읽어 집계합니다.
 
 <a id="contents"></a>
@@ -61,15 +59,15 @@ AWS에서는 객체 저장에 **Amazon S3**, NFS 기반 공유 파일 시스템�
 
 ### 같은 CSV로 같은 결과를 만듭니다
 
-아래 내용을 UTF-8 인코딩의 `orders.csv`로 저장하거나 [입문 공통 CSV](../data/orders.csv)를 복사합니다. `amount`는 원 단위 정수이고, `status`가 `paid`인 주문만 카테고리별로 집계합니다.
+아래 내용을 UTF-8 인코딩의 `orders.csv`로 저장합니다. `amount`는 원 단위 정수이고, `status`가 `paid`인 주문만 카테고리별로 집계합니다.
 
 ```csv
 order_id,category,amount,status
 1,book,12000,paid
-2,book,8000,paid
-3,food,15000,paid
+2,food,15000,paid
+3,book,8000,paid
 4,food,5000,cancelled
-5,book,7000,cancelled
+5,toy,9000,cancelled
 ```
 
 | 대상 | 파일 준비 위치 | 실행 전 준비 |

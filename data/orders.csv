@@ -1,6 +1,0 @@
-order_id,category,amount,status
-1,book,12000,paid
-2,book,8000,paid
-3,food,15000,paid
-4,food,5000,cancelled
-5,book,7000,cancelled

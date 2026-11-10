@@ -1,7 +1,5 @@
 # Python·PySpark와 JVM의 런타임 구조 이해하기
 
-> **심화 참고 자료입니다.** [06. Spark](course/06-spark.md)를 읽은 뒤 실행 내부가 궁금할 때 참고합니다. JVM·Py4J·Python worker 지식은 첫 집계 실습의 필수 조건이 아닙니다. [전체 학습 순서](../README.md) · [심화 자료 색인](reference/README.md)
-
 **Python으로 코드를 작성하는 것과, Python이 모든 데이터를 직접 계산하는 것은 다릅니다.** PySpark는 Python에서 Spark에 작업을 요청하는 API이며, 실제 실행 위치는 사용하는 연산과 연결 방식에 따라 달라집니다.
 
 이 문서는 일반적인 CPython과 Apache Spark의 구조를 기준으로 설명합니다. 그림에서는 OS·네트워크·세부 스레드 구성을 생략합니다.

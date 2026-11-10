@@ -1,7 +1,5 @@
 # Python과 PySpark의 차이 이해하기
 
-> **심화 참고 자료입니다.** 처음 배우는 경우 [05. Python 집계](course/05-python.md)와 [06. Spark](course/06-spark.md)를 먼저 읽습니다. 아래 JDBC·GIL·K-means는 첫 완주 이후의 선택 주제입니다. [전체 학습 순서](../README.md) · [심화 자료 색인](reference/README.md)
-
 Databricks를 처음 접하는 개발자를 위한 자료입니다. Python의 변수·반복문·함수 기초를 전제로 하며, **개념 → 그림 → 순수 Python·pandas·PySpark 실습 → MySQL·알고리즘 확장** 순서로 학습합니다.
 
 처음 읽을 때는 1~5절을 따라갑니다. MySQL 환경을 준비한 뒤 6절을 실습하고, 7절에서 분산 알고리즘으로 확장합니다. 낯선 용어는 하단 용어집에서 확인합니다.
