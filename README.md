@@ -1,4 +1,4 @@
-# databricks-edu-course
+# Databricks 교육 과정 (초보자용)
 
 Databricks를 처음 접하는 개발자를 위한 교육 자료입니다.
 
