@@ -1,5 +1,7 @@
 # Data Engineering에서 Lakehouse와 AI까지
 
+> **심화 참고 자료입니다.** 처음 배우는 경우 [01. 데이터 엔지니어링](course/01-data-engineering.md) → [04. Lakehouse](course/04-lakehouse.md) → [09. 파이프라인](course/09-pipeline.md) → [10. 분석·AI](course/10-analytics-and-ai.md) 순서의 입문 본문을 먼저 읽습니다. 이 문서는 각 주제의 상세 설명을 제공합니다. [전체 학습 순서](../README.md) · [심화 자료 색인](reference/README.md)
+
 **Data Engineering은 데이터를 수집·정리·저장하고, 필요한 사람이 필요한 시점에 믿고 사용할 수 있도록 시스템을 만드는 일입니다.** 분석 보고서와 AI 모델은 이 시스템이 공급하는 데이터를 사용합니다.
 
 이 문서는 온라인 쇼핑몰을 예로 들어 **그림 13장**으로 역할·기술셋·저장 구조·AI 연결을 설명합니다. 도구 이름은 구현 예시이며, 모든 제품을 동시에 도입하거나 배워야 한다는 뜻은 아닙니다.
